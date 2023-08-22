@@ -1,0 +1,23 @@
+{
+  "language": "code_typescript",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "function freeze<Type>(obj: Type): Readonly<Type>;",
+      "source": "TypeScript: Documentation - Utility Types",
+      "length": 49,
+      "id": 1
+    },
+    {
+      "text": "class GenericNumber<NumType> {\n  zeroValue: NumType;\n  add: (x: NumType, y: NumType) => NumType;\n}\n \nlet myGenericNumber = new GenericNumber<number>();\nmyGenericNumber.zeroValue = 0;\nmyGenericNumber.add = function (x, y) {\n  return x + y;\n};",
+      "source": "TypeScript: Documentation - Generics",
+      "length": 252,
+      "id": 2
+    },
+  ]
+}
