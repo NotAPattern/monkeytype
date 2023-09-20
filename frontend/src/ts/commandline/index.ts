@@ -16,7 +16,6 @@ import {
   isPopupVisible,
 } from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
-import { update as updateTagsCommands } from "./lists/tags";
 import * as Skeleton from "../popups/skeleton";
 import * as ManualRestart from "../test/manual-restart-tracker";
 
@@ -340,6 +339,7 @@ function getCommands(
         list: [],
       },
     };
+    command.subgroup.beforeList?.();
     for (const cmd of command.subgroup.list) {
       ret.push(...getCommands(cmd, currentCommand));
     }
@@ -782,15 +782,12 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
   if (attr === undefined) return;
   const commands = CommandlineLists.getList(attr);
   if (commands !== undefined) {
-    if ($(event.currentTarget).attr("commands") === "tags") {
-      updateTagsCommands();
-    }
     CommandlineLists.pushCurrent(commands);
     show();
   }
 });
 
-$("#bottom").on("click", ".leftright .right .current-theme", (e) => {
+$("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
       if (Auth?.currentUser) {

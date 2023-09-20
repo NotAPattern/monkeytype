@@ -815,7 +815,7 @@ export function findGetParameter(
   }
 
   search
-    .substr(1)
+    .slice(1)
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
@@ -837,7 +837,7 @@ export function checkIfGetParameterExists(
   }
 
   search
-    .substr(1)
+    .slice(1)
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
@@ -1354,7 +1354,9 @@ export async function getDiscordAvatarUrl(
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
 
-    const response = await fetch(avatarUrl);
+    const response = await fetch(avatarUrl, {
+      method: "HEAD",
+    });
     if (!response.ok) {
       return null;
     }
@@ -1658,6 +1660,12 @@ export function typedKeys<T extends object>(
 //https://ricardometring.com/javascript-replace-special-characters
 export function replaceSpecialChars(str: string): string {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
+}
+
+export function reloadAfter(seconds: number): void {
+  setTimeout(() => {
+    window.location.reload();
+  }, seconds * 1000);
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

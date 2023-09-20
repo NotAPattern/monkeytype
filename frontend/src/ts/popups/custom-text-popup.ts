@@ -229,6 +229,13 @@ function apply(): void {
 
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
+
+  //replace any characters that look like a space with an actual space
+  text = text.replace(/[\u2000-\u200A\u202F\u205F\u00A0]/g, " ");
+
+  //replace zero width characters
+  text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+
   text = text.replace(/\\\\t/gm, "\t");
   text = text.replace(/\\\\n/gm, "\n");
   text = text.replace(/\\t/gm, "\t");
@@ -258,10 +265,9 @@ function apply(): void {
       text = text.replace(/ +/gm, " ");
     }
   }
-  // text = Misc.remove_non_ascii(text);
-  text = text.replace(/[\u2060]/g, "");
 
-  CustomText.setText(text.split(CustomText.delimiter));
+  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  CustomText.setText(words);
 
   CustomText.setWord(
     parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
@@ -377,6 +383,32 @@ $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
 
 $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+});
+
+$(`#fileInput`).on("change", () => {
+  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  if (file) {
+    if (file.type !== "text/plain") {
+      Notifications.add("File is not a text file", -1, {
+        duration: 5,
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+
+    reader.onload = (readerEvent): void => {
+      const content = readerEvent.target?.result as string;
+      $(`${popup} textarea`).val(content);
+      $(`#fileInput`).val("");
+    };
+    reader.onerror = (): void => {
+      Notifications.add("Failed to read file", -1, {
+        duration: 5,
+      });
+    };
+  }
 });
 
 Skeleton.save(skeletonId);

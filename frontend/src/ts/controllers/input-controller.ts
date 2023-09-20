@@ -38,6 +38,7 @@ let dontInsertSpace = false;
 let correctShiftUsed = true;
 let isKoCompiling = false;
 let isBackspace: boolean;
+let incorrectShiftsInARow = 0;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -504,12 +505,7 @@ function handleChar(
     TestInput.setBurstStart(now);
   }
 
-  if (!isCharKorean && !Config.language.startsWith("korean")) {
-    resultingWord =
-      TestInput.input.current.substring(0, charIndex) +
-      char +
-      TestInput.input.current.substring(charIndex + 1);
-  } else {
+  if (isCharKorean || Config.language.startsWith("korean")) {
     // Get real input from #WordsInput char call.
     // This is because the chars can't be confirmed correctly.
     // With chars alone this happens when a previous symbol is completed
@@ -518,6 +514,11 @@ function handleChar(
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
+  } else {
+    resultingWord =
+      TestInput.input.current.substring(0, charIndex) +
+      char +
+      TestInput.input.current.substring(charIndex + 1);
   }
 
   // If a trailing composed char is used, ignore it when counting accuracy
@@ -561,7 +562,19 @@ function handleChar(
     KeymapEvent.flash(char, thisCharCorrect);
   }
 
-  if (!correctShiftUsed && Config.difficulty !== "master") return;
+  if (Config.difficulty !== "master") {
+    if (!correctShiftUsed) {
+      incorrectShiftsInARow++;
+      if (incorrectShiftsInARow >= 5) {
+        Notifications.add("Reminder: Opposite shift mode is on.", 0, {
+          important: true,
+        });
+      }
+      return;
+    } else {
+      incorrectShiftsInARow = 0;
+    }
+  }
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestInput.corrected.current === "") {
@@ -618,9 +631,11 @@ function handleChar(
   if (
     (Config.mode === "zen" && charIndex < 30) ||
     (Config.mode !== "zen" &&
-      charIndex < TestWords.words.getCurrent().length + 20)
+      resultingWord.length < TestWords.words.getCurrent().length + 20)
   ) {
     TestInput.input.current = resultingWord;
+  } else {
+    console.error("Hitting word limit");
   }
 
   if (!thisCharCorrect && Config.difficulty === "master") {
@@ -1106,7 +1121,10 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const popupVisible = Misc.isAnyPopupVisible();
-  if (popupVisible) return;
+  if (popupVisible) {
+    event.preventDefault();
+    return;
+  }
 
   TestInput.setCurrentNotAfk();
 
@@ -1166,15 +1184,15 @@ $("#wordsInput").on("input", (event) => {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
-    if (!containsKorean) {
-      TestInput.input.current = inputValue;
-    } else {
+    if (containsKorean) {
       const realInput = (event.target as HTMLInputElement).value
         .normalize()
         .slice(1);
 
       TestInput.input.current = realInput;
       koInputVisual.innerText = realInput.slice(-1);
+    } else {
+      TestInput.input.current = inputValue;
     }
 
     TestUI.updateWordElement();

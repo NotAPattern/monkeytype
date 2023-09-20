@@ -101,7 +101,9 @@
             </div>
           </div>
         </div>
-        <div class="button addTagButton"><i class="fas fa-plus"></i></div>
+        <div class="button addTagButton fullWidth">
+          <i class="fas fa-plus"></i>
+        </div>
       </div>
     </div>
     <div class="section presets">
@@ -127,7 +129,23 @@
             </div>
           </div>
         </div>
-        <div class="button addPresetButton"><i class="fas fa-plus"></i></div>
+        <div class="button addPresetButton fullWidth">
+          <i class="fas fa-plus"></i>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="groupTitle">
+        <i class="fas fa-user"></i>
+        <span>more account settings</span>
+      </div>
+      <div class="text">
+        You can access more account settings (such as changing your name,
+        password, resetting or deleting your account) in the danger zone
+        section.
+      </div>
+      <div class="buttons">
+        <a class="button" href="#group_dangerZone">go to the danger zone</a>
       </div>
     </div>
     <div class="sectionSpacer"></div>
@@ -2851,6 +2869,28 @@
           onclick="this.blur();"
         >
           remove google authentication
+        </div>
+      </div>
+    </div>
+    <div class="section revokeAllTokens">
+      <div class="groupTitle">
+        <i class="fas fa-user-slash"></i>
+        <span>revoke all tokens</span>
+      </div>
+      <div class="text">
+        Revokes all tokens connected to your account. Do this if you think
+        someone else has access to your account.
+        <br />
+        <span class="red">This will log you out of all devices.</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="revokeAllTokens"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          revoke all tokens
         </div>
       </div>
     </div>
